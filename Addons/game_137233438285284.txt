@@ -1,0 +1,100 @@
+local addons = {}
+
+local function load(Tab)
+    local AutoCollect = false
+	local AutoDeposit = false
+    local AutoCollectCash = false
+    local AutoBuyChickens = false
+    local AutoMergeChickens = false
+	task.spawn(function()
+        while task.wait() do
+            if not AutoDeposit then continue end
+            local Event = game:GetService("ReplicatedStorage").Paper.Remotes.__remotefunction
+            Event:InvokeServer(
+                "Deposit Eggs"
+            )
+        end
+    end)
+    task.spawn(function()
+        while task.wait() do
+            if not AutoCollectCash then continue end
+            local Event = game:GetService("ReplicatedStorage").Paper.Remotes.__remotefunction
+            Event:InvokeServer(
+                "Collect Cash"
+            )
+        end
+    end)
+    task.spawn(function()
+        while task.wait() do
+            if not AutoBuyChickens then continue end
+            local Event = game:GetService("ReplicatedStorage").Paper.Remotes.__remotefunction
+            Event:InvokeServer(
+                "Buy Chickens",1
+            )
+        end
+    end)
+    task.spawn(function()
+        while task.wait() do
+            if not AutoMergeChickens then continue end
+            local Event = game:GetService("ReplicatedStorage").Paper.Remotes.__remotefunction
+            Event:InvokeServer(
+                "Merge Chickens"
+            )
+        end
+    end)
+    workspace:WaitForChild("Eggs").ChildAdded:Connect(function(obj)
+        if not AutoCollect then return end
+        game:GetService("ReplicatedStorage").Paper.Remotes.__remoteevent:FireServer("Collect Egg", obj.Name)
+        obj:Destroy()
+    end)
+    Tab:CreateToggle({
+        Name = "Auto Collect",
+        CurrentValue = false,
+        Flag = "JKJJGPOREGP_AutoCollect",
+        Callback = function(Value)
+            AutoCollect = Value
+            if Value then
+                for _,obj in pairs(workspace.Eggs:GetChildren()) do
+                    game:GetService("ReplicatedStorage").Paper.Remotes.__remoteevent:FireServer("Collect Egg", obj.Name)
+                    obj:Destroy()
+                end
+            end
+        end
+    })
+    Tab:CreateToggle({
+        Name = "Auto Deposit",
+        CurrentValue = false,
+        Flag = "JKJJGPOREGP_AutoDeposit",
+        Callback = function(Value)
+            AutoDeposit = Value
+        end
+    })
+    Tab:CreateToggle({
+        Name = "Auto Collect Cash",
+        CurrentValue = false,
+        Flag = "JKJJGPOREGP_AutoCollectCash",
+        Callback = function(Value)
+            AutoCollectCash = Value
+        end
+    })
+    Tab:CreateToggle({
+        Name = "Auto Buy Chickens",
+        CurrentValue = false,
+        Flag = "JKJJGPOREGP_AutoBuyChickens",
+        Callback = function(Value)
+            AutoBuyChickens = Value
+        end
+    })
+    Tab:CreateToggle({
+        Name = "Auto Merge Chickens",
+        CurrentValue = false,
+        Flag = "JKJJGPOREGP_AutoMergeChickens",
+        Callback = function(Value)
+            AutoMergeChickens = Value
+        end
+    })
+end
+
+addons.Load = load
+return addons,0
+--addons.Load(loadstring(game:HttpGet("https://raw.githubusercontent.com/men-cofing-roblox/Addons/refs/heads/main/TestScript.txt"))())
