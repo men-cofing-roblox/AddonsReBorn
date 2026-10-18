@@ -31,14 +31,12 @@ local state = {
     cameraStretch = false,
     stretchX = CONFIG.DefaultStretchX,
     stretchY = CONFIG.DefaultStretchY,
-    noClip = false,
     fly = false,
     flySpeed = CONFIG.DefaultFlySpeed,
 }
 
 local flyGyro, flyVelocity
 local flyConnection
-local noClipConnection
 
 RunService.RenderStepped:Connect(function()
     if state.cameraStretch then
@@ -50,35 +48,6 @@ RunService.RenderStepped:Connect(function()
         )
     end
 end)
-
-local function setNoClip(enabled)
-    state.noClip = enabled
-    if noClipConnection then
-        noClipConnection:Disconnect()
-        noClipConnection = nil
-    end
-
-    if enabled then
-        noClipConnection = RunService.Stepped:Connect(function()
-            local character = LocalPlayer.Character
-            if not character then return end
-            for _, item in ipairs(character:GetDescendants()) do
-                if item:IsA("BasePart") then
-                    item.CanCollide = false
-                end
-            end
-        end)
-    else
-        local character = LocalPlayer.Character
-        if character then
-            for _, item in ipairs(character:GetDescendants()) do
-                if item:IsA("BasePart") then
-                    item.CanCollide = true
-                end
-            end
-        end
-    end
-end
 
 local function stopFly()
     state.fly = false
@@ -263,13 +232,6 @@ tab:CreateSlider({
     Callback = function(value)
         state.stretchY = value
     end,
-})
-
-tab:CreateToggle({
-    Name = "No Clip",
-    CurrentValue = false,
-    Flag = "EveryGame/NoClip",
-    Callback = setNoClip,
 })
 
 tab:CreateToggle({
