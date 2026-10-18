@@ -20,7 +20,7 @@ _G.MENCOFINGANITRUN = true
 
 local CONFIG = {
     RayfieldUrl = "https://raw.githubusercontent.com/men-cofing-roblox/AddonsReBorn/main/rayfield.luau", -- own RayField to Fix Rivals Detect
-    DatabaseUrl = "https://raw.githubusercontent.com/men-cofing-roblox/Addons/refs/heads/main/database.json",
+    DatabaseUrl = "https://raw.githubusercontent.com/men-cofing-roblox/AddonsReBorn/refs/heads/main/database.json",
     WindowName = "Men Cofing | Addons | ReBorn",
     DefaultFlySpeed = 25,
     DefaultStretchX = 100,
@@ -230,7 +230,7 @@ end
 
 local tab = window:CreateTab("EveryGame", 0)
 
-window:CreateTab(namegame, 0):CreateSection("Soon")
+local luaoutdoor = window:CreateTab(namegame, 0)
 
 tab:CreateToggle({
     Name = "Camera Stretch",
@@ -304,3 +304,53 @@ tab:CreateButton({
     end,
 })
 
+local function fetchGameDatabase()
+    local ok, response = pcall(function()
+        return game:HttpGet(CONFIG.DatabaseUrl)
+    end)
+    if not ok then
+        return nil, "Could not download the game database."
+    end
+
+    local decodeOk, decoded = pcall(function()
+        return HttpService:JSONDecode(response)
+    end)
+    if not decodeOk or type(decoded) ~= "table" then
+        return nil, "The game database was not valid JSON."
+    end
+    return decoded
+end
+
+local function findGameScript(database, placeId)
+    if type(database) ~= "table" then
+        return nil
+    end
+
+    for _, entry in pairs(database) do
+        if type(entry) == "table" then
+            local id = entry.placeid
+
+            if tonumber(id) == tonumber(placeId) then
+                return entry.scripturl
+            end
+        end
+    end
+
+    return nil
+end
+
+local DataLuas = fetchGameDatabase()
+
+local luaurl = findGameScript(DataLuas,game.PlaceId)
+
+task.spawn(function()
+    if not luaurl then luaoutdoor:CreateSection("no one has made a script for this game yet") return end
+    local TableofData,_sizeofwindow = loadstring(game:HttpGet(luaurl) or "")()
+    if not TableofData then luaoutdoor:CreateSection("the lua dont return some value") return end
+    if not TableofData.Load then luaoutdoor:CreateSection("the lua dont have load yet") return end
+    pcall(TableofData.Load,luaoutdoor)
+end)
+
+task.wait(1) -- waiting the outdoor load fully 
+
+Rayfield:LoadConfiguration()
