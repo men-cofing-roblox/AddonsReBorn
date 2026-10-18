@@ -19,7 +19,7 @@ end
 _G.MENCOFINGANITRUN = true
 
 local CONFIG = {
-    RayfieldUrl = "https://sirius.menu/rayfield",
+    RayfieldUrl = "https://raw.githubusercontent.com/men-cofing-roblox/AddonsReBorn/main/rayfield.luau", -- own RayField to Fix Rivals Detect
     DatabaseUrl = "https://raw.githubusercontent.com/men-cofing-roblox/Addons/refs/heads/main/database.json",
     WindowName = "Men Cofing | Addons | ReBorn",
     DefaultFlySpeed = 25,
